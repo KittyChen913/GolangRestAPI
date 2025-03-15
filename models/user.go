@@ -89,3 +89,19 @@ func (u User) Update() error {
 		sql.Named("userId", u.Id))
 	return err
 }
+
+func (u User) Delete() error {
+	query := `
+	DELETE 
+	FROM Users
+	WHERE Id = @userId`
+
+	statement, err := db.Db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(sql.Named("userId", u.Id))
+	return err
+}
