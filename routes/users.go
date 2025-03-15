@@ -45,3 +45,32 @@ func getUser(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, user)
 }
+
+func updateUser(context *gin.Context) {
+	userId, err := strconv.ParseInt(context.Param("userId"), 10, 32)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse user id."})
+		return
+	}
+
+	_, err = models.QueryById(int(userId))
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch the user."})
+		return
+	}
+
+	var updatedUser models.User
+	err = context.ShouldBindJSON(&updatedUser)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Invalid input parameters."})
+		return
+	}
+	updatedUser.Id = int(userId)
+
+	err = updatedUser.Update()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not update user."})
+		return
+	}
+	context.JSON(http.StatusCreated, gin.H{"message": "User updated."})
+}

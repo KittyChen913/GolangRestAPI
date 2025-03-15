@@ -70,3 +70,22 @@ func QueryById(userId int) (*User, error) {
 	}
 	return &user, nil
 }
+
+func (u User) Update() error {
+	query := `
+	UPDATE Users
+	SET Name = @name, Age = @age
+	WHERE Id = @userId`
+
+	statement, err := db.Db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(
+		sql.Named("name", u.Name),
+		sql.Named("age", u.Age),
+		sql.Named("userId", u.Id))
+	return err
+}
