@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"golangrestapi/db"
+	"golangrestapi/utils"
 )
 
 type Admin struct {
@@ -24,10 +25,15 @@ func (a *Admin) Insert() error {
 	}
 	defer statement.Close()
 
+	hashedPassword, err := utils.HashPassword(a.Password)
+	if err != nil {
+		return err
+	}
+
 	var adminId int
 	err = statement.QueryRow(
 		sql.Named("name", a.Name),
-		sql.Named("password", a.Password),
+		sql.Named("password", hashedPassword),
 		sql.Named("email", a.Email)).Scan(&adminId)
 	if err != nil {
 		return err
