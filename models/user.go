@@ -59,3 +59,14 @@ func Query() ([]User, error) {
 
 	return users, nil
 }
+
+func QueryById(userId int) (*User, error) {
+	query := `SELECT * FROM Users WHERE Id = @userId`
+	result := db.Db.QueryRow(query, sql.Named("userId", userId))
+	var user User
+	err := result.Scan(&user.Id, &user.Name, &user.Age, &user.CreateDateTime)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
