@@ -36,3 +36,26 @@ func (u *User) Insert() error {
 	u.Id = userId
 	return nil
 }
+
+func Query() ([]User, error) {
+	query := `SELECT * FROM Users`
+	result, err := db.Db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	defer result.Close()
+
+	var users []User
+
+	for result.Next() {
+		var user User
+		err := result.Scan(&user.Id, &user.Name, &user.Age, &user.CreateDateTime)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
+}

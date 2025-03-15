@@ -13,6 +13,7 @@ func main() {
 	db.InitDb()
 
 	server.POST("/CreateUser", createUser)
+	server.GET("/GetUsers", getUsers)
 	server.Run()
 }
 
@@ -29,4 +30,13 @@ func createUser(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusCreated, gin.H{"message": "User created.", "user": user})
+}
+
+func getUsers(context *gin.Context) {
+	users, err := models.Query()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch users."})
+		return
+	}
+	context.JSON(http.StatusOK, users)
 }
