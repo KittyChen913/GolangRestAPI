@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"golangrestapi/models"
 	"net/http"
 	"strconv"
@@ -15,18 +16,23 @@ func createUser(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Invalid input parameters."})
 		return
 	}
+
+	adminId := context.GetInt("adminId")
+
 	err = user.Insert()
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Create user failed."})
+		context.JSON(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("[Admin : %v] Create user failed.", adminId)})
 		return
 	}
-	context.JSON(http.StatusCreated, gin.H{"message": "User created.", "user": user})
+	context.JSON(http.StatusCreated, gin.H{"message": fmt.Sprintf("[Admin : %v] User created.", adminId), "user": user})
 }
 
 func getUsers(context *gin.Context) {
+	adminId := context.GetInt("adminId")
+
 	users, err := models.Query()
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch users."})
+		context.JSON(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("[Admin : %v] Could not fetch users.", adminId)})
 		return
 	}
 	context.JSON(http.StatusOK, users)
@@ -38,9 +44,12 @@ func getUser(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse user id."})
 		return
 	}
+
+	adminId := context.GetInt("adminId")
+
 	user, err := models.QueryById(int(userId))
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch user."})
+		context.JSON(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("[Admin : %v] Could not fetch user.", adminId)})
 		return
 	}
 	context.JSON(http.StatusOK, user)
@@ -53,9 +62,11 @@ func updateUser(context *gin.Context) {
 		return
 	}
 
+	adminId := context.GetInt("adminId")
+
 	_, err = models.QueryById(int(userId))
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch the user."})
+		context.JSON(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("[Admin : %v] Could not fetch the user.", adminId)})
 		return
 	}
 
@@ -69,10 +80,10 @@ func updateUser(context *gin.Context) {
 
 	err = updatedUser.Update()
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not update user."})
+		context.JSON(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("[Admin : %v] Could not update user.", adminId)})
 		return
 	}
-	context.JSON(http.StatusCreated, gin.H{"message": "User updated."})
+	context.JSON(http.StatusCreated, gin.H{"message": fmt.Sprintf("[Admin : %v] User updated.", adminId)})
 }
 
 func deleteUser(context *gin.Context) {
@@ -81,15 +92,18 @@ func deleteUser(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse user id."})
 		return
 	}
+
+	adminId := context.GetInt("adminId")
+
 	user, err := models.QueryById(int(userId))
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch user."})
+		context.JSON(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("[Admin : %v] Could not fetch user.", adminId)})
 		return
 	}
 	err = user.Delete()
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Delete user failed."})
+		context.JSON(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("[Admin : %v] Delete user failed.", adminId)})
 		return
 	}
-	context.JSON(http.StatusOK, gin.H{"message": "User deleted."})
+	context.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("[Admin : %v] User deleted.", adminId)})
 }

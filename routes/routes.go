@@ -1,13 +1,19 @@
 package routes
 
-import "github.com/gin-gonic/gin"
+import (
+	"golangrestapi/middlewares"
+
+	"github.com/gin-gonic/gin"
+)
 
 func RegisterRoutes(server *gin.Engine) {
-
-	server.POST("/CreateUser", createUser)
-	server.GET("/GetUsers", getUsers)
-	server.GET("/GetUser/:userId", getUser)
-	server.PUT("/UpdateUser/:userId", updateUser)
-	server.DELETE("/DeleteUser/:userId", deleteUser)
 	server.POST("/SignUpAdmin", signUpAdmin)
+
+	amindAuthenticated := server.Group("/")
+	amindAuthenticated.Use(middlewares.Authenticate)
+	amindAuthenticated.POST("/CreateUser", createUser)
+	amindAuthenticated.GET("/GetUsers", getUsers)
+	amindAuthenticated.GET("/GetUser/:userId", getUser)
+	amindAuthenticated.PUT("/UpdateUser/:userId", updateUser)
+	amindAuthenticated.DELETE("/DeleteUser/:userId", deleteUser)
 }
