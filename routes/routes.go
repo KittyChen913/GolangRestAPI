@@ -7,6 +7,8 @@ import (
 )
 
 func RegisterRoutes(server *gin.Engine) {
+	server.Use(middlewares.ErrorHandler)
+
 	server.POST("/SignUpAdmin", signUpAdmin)
 
 	amindAuthenticated := server.Group("/")
