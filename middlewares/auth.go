@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"net/http"
+	"golangrestapi/customerrors"
 
 	"github.com/gin-gonic/gin"
 )
@@ -9,7 +9,8 @@ import (
 func Authenticate(context *gin.Context) {
 	token := context.Request.Header.Get("Authorization")
 	if token == "" {
-		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Not authorized."})
+		context.Error(customerrors.NewAuthenticationError("Not authorized."))
+		context.Abort()
 		return
 	}
 

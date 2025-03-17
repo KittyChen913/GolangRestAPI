@@ -1,8 +1,9 @@
 package middlewares
 
 import (
+	"errors"
+	"golangrestapi/customerrors"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,6 +12,13 @@ func ErrorHandler(context *gin.Context) {
 	context.Next()
 
 	if len(context.Errors) > 0 {
-		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": strings.Join(context.Errors.Errors(), " | ")})
+		err := context.Errors.Last().Err
+
+		switch {
+		case errors.As(err, &customerrors.AuthenticationError{}):
+			context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		default:
+			context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		}
 	}
 }
