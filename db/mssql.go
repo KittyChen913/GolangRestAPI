@@ -2,7 +2,9 @@ package db
 
 import (
 	"database/sql"
+	"os"
 
+	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/microsoft/go-mssqldb"
 )
 
@@ -10,7 +12,7 @@ var Db *sql.DB
 
 func InitDb() {
 	var err error
-	Db, err = sql.Open("sqlserver", "sqlserver://admin:admin@localhost:1433?database=DemoDb&encrypt=disable")
+	Db, err = sql.Open("sqlserver", os.Getenv("DemoDb"))
 	if err != nil {
 		panic("Unable to connect to the database.")
 	}
