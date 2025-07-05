@@ -9,6 +9,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// createUser 建立新使用者
+// @Summary 建立新使用者
+// @Description 由管理員建立新使用者
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer Token"
+// @Param user body models.User true "使用者資料"
+// @Success 201 {object} models.User
+// @Failure 400 {object} error
+// @Router /CreateUser [post]
 func createUser(context *gin.Context) {
 	var user models.User
 	err := context.ShouldBindJSON(&user)
@@ -27,6 +38,16 @@ func createUser(context *gin.Context) {
 	context.JSON(http.StatusCreated, gin.H{"message": fmt.Sprintf("[Admin : %v] user created", adminId), "user": user})
 }
 
+// getUsers 取得所有使用者
+// @Summary 取得所有使用者
+// @Description 由管理員查詢所有使用者
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer Token"
+// @Success 200 {array} models.User
+// @Failure 400 {object} error
+// @Router /GetUsers [get]
 func getUsers(context *gin.Context) {
 	adminId := context.GetInt("adminId")
 
@@ -38,6 +59,17 @@ func getUsers(context *gin.Context) {
 	context.JSON(http.StatusOK, users)
 }
 
+// getUser 取得單一使用者
+// @Summary 取得單一使用者
+// @Description 由管理員查詢指定 ID 的使用者
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer Token"
+// @Param userId path int true "使用者ID"
+// @Success 200 {object} models.User
+// @Failure 400 {object} error
+// @Router /GetUser/{userId} [get]
 func getUser(context *gin.Context) {
 	userId, err := strconv.ParseInt(context.Param("userId"), 10, 32)
 	if err != nil {
@@ -55,6 +87,18 @@ func getUser(context *gin.Context) {
 	context.JSON(http.StatusOK, user)
 }
 
+// updateUser 更新使用者
+// @Summary 更新使用者
+// @Description 由管理員更新指定 ID 的使用者資料
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer Token"
+// @Param userId path int true "使用者ID"
+// @Param user body models.User true "使用者資料"
+// @Success 201 {object} string
+// @Failure 400 {object} error
+// @Router /UpdateUser/{userId} [put]
 func updateUser(context *gin.Context) {
 	userId, err := strconv.ParseInt(context.Param("userId"), 10, 32)
 	if err != nil {
@@ -86,6 +130,17 @@ func updateUser(context *gin.Context) {
 	context.JSON(http.StatusCreated, gin.H{"message": fmt.Sprintf("[Admin : %v] User updated.", adminId)})
 }
 
+// deleteUser 刪除使用者
+// @Summary 刪除使用者
+// @Description 由管理員刪除指定 ID 的使用者
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer Token"
+// @Param userId path int true "使用者ID"
+// @Success 200 {object} string
+// @Failure 400 {object} error
+// @Router /DeleteUser/{userId} [delete]
 func deleteUser(context *gin.Context) {
 	userId, err := strconv.ParseInt(context.Param("userId"), 10, 32)
 	if err != nil {

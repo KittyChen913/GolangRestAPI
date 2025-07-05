@@ -7,6 +7,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// SignUpAdmin godoc
+// @Summary Admin 註冊
+// @Description 註冊新的管理員帳號
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Param admin body models.Admin true "管理員資訊"
+// @Success 201 {object} map[string]interface{} "註冊成功"
+// @Failure 400 {object} map[string]string "參數錯誤"
+// @Failure 500 {object} map[string]string "註冊失敗"
+// @Router /SignUpAdmin [post]
 func signUpAdmin(context *gin.Context) {
 	var admin models.Admin
 	err := context.ShouldBindJSON(&admin)
