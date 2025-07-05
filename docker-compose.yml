@@ -19,5 +19,24 @@ services:
     command: >
       /bin/bash -c "/opt/mssql/bin/sqlservr & sleep 15 && /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P StrongPassword!123 -C -i /usr/config/init.sql && wait"
 
+  # API Service
+  api-service:
+    build:
+      context: ./api-service
+      dockerfile: ./Dockerfile
+    ports:
+      - "8080:8080"
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      - TZ=Asia/Taipei
+      - PORT=8080
+      - DemoDb=sqlserver://sa:StrongPassword!123@mssql-db:1433?database=DemoDb&encrypt=disable
+    volumes:
+      - ./api-service:/app
+    depends_on:
+      - mssql-db
+
 volumes:
   mssql_data:

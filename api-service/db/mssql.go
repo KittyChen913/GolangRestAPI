@@ -30,6 +30,6 @@ func InitDb() {
 		if i == retryCount {
 			panic("Unable to connect to the database: " + err.Error())
 		}
-		time.Sleep(2 * time.Second)
+		time.Sleep(8 * time.Second)
 	}
 }
