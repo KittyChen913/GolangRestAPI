@@ -1,0 +1,23 @@
+version: '3.9'
+
+services:
+  # DB
+  mssql-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=StrongPassword!123
+      - MSSQL_PID=Developer
+      - TZ=Asia/Taipei
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+      - ./initDb:/usr/config
+    restart: always
+    command: >
+      /bin/bash -c "/opt/mssql/bin/sqlservr & sleep 15 && /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P StrongPassword!123 -C -i /usr/config/init.sql && wait"
+
+volumes:
+  mssql_data:
