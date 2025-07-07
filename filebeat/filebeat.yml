@@ -3,6 +3,7 @@ filebeat.inputs:
   enabled: true
   paths:
     - /app/logs/*.log
+  prospector.scanner.fingerprint.length: 64
   parsers:
     - ndjson:
         overwrite_keys: true
