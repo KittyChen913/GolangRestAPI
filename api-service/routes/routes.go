@@ -7,6 +7,7 @@ import (
 )
 
 func RegisterRoutes(server *gin.Engine) {
+	server.Use(middlewares.ZapLoggerMiddleware)
 	server.Use(middlewares.ErrorHandler)
 
 	server.POST("/SignUpAdmin", signUpAdmin)

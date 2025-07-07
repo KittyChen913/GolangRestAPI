@@ -3,6 +3,7 @@ package main
 import (
 	"api-service/db"
 	_ "api-service/docs"
+	"api-service/logger"
 	"api-service/routes"
 
 	"github.com/gin-gonic/gin"
@@ -12,6 +13,9 @@ import (
 )
 
 func main() {
+	logger.InitLogger()
+	defer logger.Log.Sync()
+
 	server := gin.Default()
 	db.InitDb()
 

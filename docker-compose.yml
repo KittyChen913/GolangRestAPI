@@ -35,6 +35,7 @@ services:
       - DemoDb=sqlserver://sa:StrongPassword!123@mssql-db:1433?database=DemoDb&encrypt=disable
     volumes:
       - ./api-service:/app
+      - log-data:/logs
     depends_on:
       - mssql-db
 
