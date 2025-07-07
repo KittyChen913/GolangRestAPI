@@ -1,8 +1,8 @@
 package routes
 
 import (
+	"api-service/models"
 	"fmt"
-	"golangrestapi/models"
 	"net/http"
 	"strconv"
 

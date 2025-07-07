@@ -1,8 +1,8 @@
 package models
 
 import (
+	"api-service/db"
 	"database/sql"
-	"golangrestapi/db"
 	"time"
 )
 

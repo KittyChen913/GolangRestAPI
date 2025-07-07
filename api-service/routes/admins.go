@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"golangrestapi/models"
+	"api-service/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

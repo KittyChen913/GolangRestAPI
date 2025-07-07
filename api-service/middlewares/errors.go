@@ -1,8 +1,8 @@
 package middlewares
 
 import (
+	"api-service/customerrors"
 	"errors"
-	"golangrestapi/customerrors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

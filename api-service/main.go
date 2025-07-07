@@ -1,9 +1,9 @@
 package main
 
 import (
-	"golangrestapi/db"
-	_ "golangrestapi/docs"
-	"golangrestapi/routes"
+	"api-service/db"
+	_ "api-service/docs"
+	"api-service/routes"
 
 	"github.com/gin-gonic/gin"
 

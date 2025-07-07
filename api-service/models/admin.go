@@ -1,9 +1,9 @@
 package models
 
 import (
+	"api-service/db"
+	"api-service/utils"
 	"database/sql"
-	"golangrestapi/db"
-	"golangrestapi/utils"
 )
 
 type Admin struct {
