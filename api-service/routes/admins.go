@@ -27,7 +27,7 @@ func signUpAdmin(context *gin.Context) {
 	}
 	err = admin.Insert()
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Admin registration failed."})
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Admin registration failed. [error] : " + err.Error()})
 		return
 	}
 	context.JSON(http.StatusCreated, gin.H{"message": "Admin registration successfully.", "admin": admin})

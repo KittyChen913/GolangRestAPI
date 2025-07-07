@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,10 +30,11 @@ func createUser(context *gin.Context) {
 	}
 
 	adminId := context.GetInt("adminId")
+	user.CreateDateTime = time.Now()
 
 	err = user.Insert()
 	if err != nil {
-		context.Error(fmt.Errorf("[Admin : %v] create user failed", adminId))
+		context.Error(fmt.Errorf("[Admin : %v] create user failed. [error] : %v", adminId, err))
 		return
 	}
 	context.JSON(http.StatusCreated, gin.H{"message": fmt.Sprintf("[Admin : %v] user created", adminId), "user": user})
@@ -53,7 +55,7 @@ func getUsers(context *gin.Context) {
 
 	users, err := models.Query()
 	if err != nil {
-		context.Error(fmt.Errorf("[Admin : %v] could not fetch users", adminId))
+		context.Error(fmt.Errorf("[Admin : %v] could not fetch users. [error] : %v", adminId, err))
 		return
 	}
 	context.JSON(http.StatusOK, users)
@@ -81,7 +83,7 @@ func getUser(context *gin.Context) {
 
 	user, err := models.QueryById(int(userId))
 	if err != nil {
-		context.Error(fmt.Errorf("[Admin : %v] could not fetch user", adminId))
+		context.Error(fmt.Errorf("[Admin : %v] could not fetch user. [error] : %v", adminId, err))
 		return
 	}
 	context.JSON(http.StatusOK, user)
@@ -102,7 +104,7 @@ func getUser(context *gin.Context) {
 func updateUser(context *gin.Context) {
 	userId, err := strconv.ParseInt(context.Param("userId"), 10, 32)
 	if err != nil {
-		context.Error(fmt.Errorf("could not parse user id"))
+		context.Error(fmt.Errorf("could not parse user id. [error] : %v", err))
 		return
 	}
 
@@ -110,7 +112,7 @@ func updateUser(context *gin.Context) {
 
 	_, err = models.QueryById(int(userId))
 	if err != nil {
-		context.Error(fmt.Errorf("[Admin : %v] could not fetch the user", adminId))
+		context.Error(fmt.Errorf("[Admin : %v] could not fetch the user. [error] : %v", adminId, err))
 		return
 	}
 
@@ -124,7 +126,7 @@ func updateUser(context *gin.Context) {
 
 	err = updatedUser.Update()
 	if err != nil {
-		context.Error(fmt.Errorf("[Admin : %v] could not update user", adminId))
+		context.Error(fmt.Errorf("[Admin : %v] could not update user. [error] : %v", adminId, err))
 		return
 	}
 	context.JSON(http.StatusCreated, gin.H{"message": fmt.Sprintf("[Admin : %v] User updated.", adminId)})
@@ -152,12 +154,12 @@ func deleteUser(context *gin.Context) {
 
 	user, err := models.QueryById(int(userId))
 	if err != nil {
-		context.Error(fmt.Errorf("[Admin : %v] could not fetch user", adminId))
+		context.Error(fmt.Errorf("[Admin : %v] could not fetch user. [error] : %v", adminId, err))
 		return
 	}
 	err = user.Delete()
 	if err != nil {
-		context.Error(fmt.Errorf("[Admin : %v] delete user failed", adminId))
+		context.Error(fmt.Errorf("[Admin : %v] delete user failed. [error] : %v", adminId, err))
 		return
 	}
 	context.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("[Admin : %v] User deleted.", adminId)})

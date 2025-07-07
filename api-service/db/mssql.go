@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
 	"time"
 
@@ -21,6 +22,7 @@ func InitDb() {
 	Db.SetMaxOpenConns(10)
 	Db.SetMaxIdleConns(5)
 
+	time.Sleep(25 * time.Second)
 	// 連線測試
 	for i := 1; i <= retryCount; i++ {
 		err = Db.Ping()
@@ -30,6 +32,7 @@ func InitDb() {
 		if i == retryCount {
 			panic("Unable to connect to the database: " + err.Error())
 		}
-		time.Sleep(8 * time.Second)
+		fmt.Printf("Attempt %d/%d: Unable to connect to the database, retrying in 5 seconds...\n", i, retryCount)
+		time.Sleep(5 * time.Second)
 	}
 }
