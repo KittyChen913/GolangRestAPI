@@ -42,7 +42,7 @@ docker-compose up --build
     -   API 服務被訪問後，filebeat 會自動傳遞 `filebeat-datastream-*` index 過來
 -   **Kibana (日誌儀表板)**: [http://localhost:5601](http://localhost:5601)
     -   開啟後，點擊左側選單的 "Discover"，您應該能看到由 `api-service` 產生的日誌。
-    -   點選左側選單的 "Stack Management" > "Index Management"，勾選 "Include hidden indices" 即可看到 `.ds-filebeat-datastream-9.0.3-*`
+    -   點選左側選單的 "Stack Management" > "Index Management"，勾選 "Include hidden indices" 即可看到 `.ds-filebeat-datastream-9.0.3-*`，不用自己手動 Create Index
 -   **資料庫連線**:
     -   **工具**: SQL Server Management Studio
     -   **主機**: `localhost`
@@ -52,7 +52,7 @@ docker-compose up --build
 
 ## 組態設定
 
-`docker-compose.yml`定義所有服務的啟動方式、相依性、網路與資料卷。
+`docker-compose.yml`定義所有服務的啟動方式、相依性、資料卷。
 
 ### 環境變數
 
@@ -63,7 +63,7 @@ docker-compose up --build
 
 ### 資料庫初始化
 
-當 `mssql-db` 服務首次啟動時，會自動執行 `initDb/init.sql` 指令碼。您可以將建立資料表 (`CREATE TABLE`)、插入初始資料 (`INSERT`) 等 SQL 命令放在此檔案中。
+當 `mssql-db` 服務首次啟動時，會自動執行 `initDb/init.sql` 指令碼，將建立資料表 (`CREATE TABLE`) 的 SQL 命令放在此檔案中。
 
 ### 日誌收集
 
