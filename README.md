@@ -63,7 +63,7 @@ docker-compose up --build
 
 ### 資料庫初始化
 
-當 `mssql-db` 服務首次啟動時，會自動執行 `initDb/init.sql` 指令碼，將建立資料表 (`CREATE TABLE`) 的 SQL 命令放在此檔案中。
+當 `mssql-db` 服務首次啟動時，會自動執行 `initDb/init.sql` 指令碼，這裡會執行建立資料表 (`CREATE TABLE`) 的 SQL 命令。
 
 ### 日誌收集
 
