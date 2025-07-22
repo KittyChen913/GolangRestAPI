@@ -13,9 +13,9 @@ func ErrorHandler(context *gin.Context) {
 
 	if len(context.Errors) > 0 {
 		err := context.Errors.Last().Err
-
+		var authErr *customerrors.AuthenticationError
 		switch {
-		case errors.As(err, &customerrors.AuthenticationError{}):
+		case errors.As(err, &authErr):
 			context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
 		default:
 			context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
