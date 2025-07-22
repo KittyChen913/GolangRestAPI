@@ -38,7 +38,7 @@ func (u *User) Insert() error {
 }
 
 func Query() ([]User, error) {
-	query := `SELECT * FROM Users`
+	query := `SELECT Id, Name, Age, CreateDateTime FROM Users`
 	result, err := db.Db.Query(query)
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func Query() ([]User, error) {
 }
 
 func QueryById(userId int) (*User, error) {
-	query := `SELECT * FROM Users WHERE Id = @userId`
+	query := `SELECT Id, Name, Age, CreateDateTime FROM Users WHERE Id = @userId`
 	result := db.Db.QueryRow(query, sql.Named("userId", userId))
 	var user User
 	err := result.Scan(&user.Id, &user.Name, &user.Age, &user.CreateDateTime)
