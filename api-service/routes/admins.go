@@ -1,7 +1,9 @@
 package routes
 
 import (
+	"api-service/db"
 	"api-service/models"
+	"api-service/repositories"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,10 +27,14 @@ func signUpAdmin(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Invalid input parameters."})
 		return
 	}
-	err = admin.Insert()
+
+	repo := repositories.NewAdminRepository(db.Db)
+	err = repo.Insert(&admin)
+
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Admin registration failed. [error] : " + err.Error()})
 		return
 	}
+
 	context.JSON(http.StatusCreated, gin.H{"message": "Admin registration successfully.", "admin": admin})
 }

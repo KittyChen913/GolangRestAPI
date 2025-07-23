@@ -1,7 +1,9 @@
 package routes
 
 import (
+	"api-service/db"
 	"api-service/models"
+	"api-service/repositories"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -32,7 +34,8 @@ func createUser(context *gin.Context) {
 	adminId := context.GetInt("adminId")
 	user.CreateDateTime = time.Now()
 
-	err = user.Insert()
+	repo := repositories.NewUserRepository(db.Db)
+	err = repo.Insert(&user)
 	if err != nil {
 		context.Error(fmt.Errorf("[Admin : %v] create user failed. [error] : %v", adminId, err))
 		return
@@ -53,7 +56,8 @@ func createUser(context *gin.Context) {
 func getUsers(context *gin.Context) {
 	adminId := context.GetInt("adminId")
 
-	users, err := models.Query()
+	repo := repositories.NewUserRepository(db.Db)
+	users, err := repo.Query()
 	if err != nil {
 		context.Error(fmt.Errorf("[Admin : %v] could not fetch users. [error] : %v", adminId, err))
 		return
@@ -81,7 +85,8 @@ func getUser(context *gin.Context) {
 
 	adminId := context.GetInt("adminId")
 
-	user, err := models.QueryById(int(userId))
+	repo := repositories.NewUserRepository(db.Db)
+	user, err := repo.QueryById(int(userId))
 	if err != nil {
 		context.Error(fmt.Errorf("[Admin : %v] could not fetch user. [error] : %v", adminId, err))
 		return
@@ -110,7 +115,8 @@ func updateUser(context *gin.Context) {
 
 	adminId := context.GetInt("adminId")
 
-	_, err = models.QueryById(int(userId))
+	repo := repositories.NewUserRepository(db.Db)
+	_, err = repo.QueryById(int(userId))
 	if err != nil {
 		context.Error(fmt.Errorf("[Admin : %v] could not fetch the user. [error] : %v", adminId, err))
 		return
@@ -124,7 +130,7 @@ func updateUser(context *gin.Context) {
 	}
 	updatedUser.Id = int(userId)
 
-	err = updatedUser.Update()
+	err = repo.Update(&updatedUser)
 	if err != nil {
 		context.Error(fmt.Errorf("[Admin : %v] could not update user. [error] : %v", adminId, err))
 		return
@@ -152,12 +158,13 @@ func deleteUser(context *gin.Context) {
 
 	adminId := context.GetInt("adminId")
 
-	user, err := models.QueryById(int(userId))
+	repo := repositories.NewUserRepository(db.Db)
+	user, err := repo.QueryById(int(userId))
 	if err != nil {
 		context.Error(fmt.Errorf("[Admin : %v] could not fetch user. [error] : %v", adminId, err))
 		return
 	}
-	err = user.Delete()
+	err = repo.Delete(user)
 	if err != nil {
 		context.Error(fmt.Errorf("[Admin : %v] delete user failed. [error] : %v", adminId, err))
 		return
