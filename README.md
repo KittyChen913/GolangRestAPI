@@ -8,7 +8,7 @@
 
 應用程式由以下服務組成：
 
-*   **`api-service`**: 核心的 REST API，使用 Go 語言編寫，Log 處理採用具備高效能、支援結構化輸出的 [zap](https://github.com/uber-go/zap) 日誌框架。
+*   **`api-service`**: 核心的 REST API，使用 Go 語言與 [Gin](https://github.com/gin-gonic/gin) 框架編寫，Log 處理採用具備高效能、支援結構化輸出的 [zap](https://github.com/uber-go/zap) 日誌框架。
 *   **`mssql-db`**: Microsoft SQL Server 2022 資料庫。
 *   **`filebeat`**: 一個輕量級的日誌收集器，收集日誌並轉發到 Elasticsearch。
 *   **`elasticsearch`**: 一個搜尋與分析引擎，用於儲存和索引日誌，此專案用於接收 filebeat 傳過來的日誌內容。
