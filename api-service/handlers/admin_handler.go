@@ -1,13 +1,20 @@
-package routes
+package handlers
 
 import (
-	"api-service/db"
 	"api-service/models"
-	"api-service/repositories"
+	"api-service/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
+
+type AdminHandler struct {
+	adminService services.AdminService
+}
+
+func NewAdminHandler(adminService services.AdminService) *AdminHandler {
+	return &AdminHandler{adminService: adminService}
+}
 
 // SignUpAdmin godoc
 // @Summary Admin 註冊
@@ -20,21 +27,17 @@ import (
 // @Failure 400 {object} map[string]string "參數錯誤"
 // @Failure 500 {object} map[string]string "註冊失敗"
 // @Router /SignUpAdmin [post]
-func signUpAdmin(context *gin.Context) {
+func (handler *AdminHandler) SignUpAdmin(context *gin.Context) {
 	var admin models.Admin
 	err := context.ShouldBindJSON(&admin)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Invalid input parameters."})
 		return
 	}
-
-	repo := repositories.NewAdminRepository(db.Db)
-	err = repo.Insert(&admin)
-
+	err = handler.adminService.SignUpAdmin(&admin)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Admin registration failed. [error] : " + err.Error()})
 		return
 	}
-
 	context.JSON(http.StatusCreated, gin.H{"message": "Admin registration successfully.", "admin": admin})
 }

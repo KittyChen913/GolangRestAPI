@@ -25,10 +25,14 @@ func main() {
 	// Swagger settings
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
+	adminRepo := repositories.NewAdminRepository(db.Db)
+	adminService := services.NewAdminService(adminRepo)
+	adminHandler := handlers.NewAdminHandler(adminService)
+
 	userRepo := repositories.NewUserRepository(db.Db)
 	userService := services.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userService)
 
-	routes.RegisterRoutes(server, userHandler)
+	routes.RegisterRoutes(server, adminHandler, userHandler)
 	server.Run()
 }

@@ -7,17 +7,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(server *gin.Engine, handler *handlers.UserHandler) {
+func RegisterRoutes(server *gin.Engine,
+	adminHandler *handlers.AdminHandler,
+	userHandler *handlers.UserHandler) {
+
 	server.Use(middlewares.ZapLoggerMiddleware)
 	server.Use(middlewares.ErrorHandler)
 
-	server.POST("/SignUpAdmin", signUpAdmin)
+	server.POST("/SignUpAdmin", adminHandler.SignUpAdmin)
 
 	amindAuthenticated := server.Group("/")
 	amindAuthenticated.Use(middlewares.Authenticate)
-	amindAuthenticated.POST("/CreateUser", handler.CreateUser)
-	amindAuthenticated.GET("/GetUsers", handler.GetUsers)
-	amindAuthenticated.GET("/GetUser/:userId", handler.GetUser)
-	amindAuthenticated.PUT("/UpdateUser/:userId", handler.UpdateUser)
-	amindAuthenticated.DELETE("/DeleteUser/:userId", handler.DeleteUser)
+	amindAuthenticated.POST("/CreateUser", userHandler.CreateUser)
+	amindAuthenticated.GET("/GetUsers", userHandler.GetUsers)
+	amindAuthenticated.GET("/GetUser/:userId", userHandler.GetUser)
+	amindAuthenticated.PUT("/UpdateUser/:userId", userHandler.UpdateUser)
+	amindAuthenticated.DELETE("/DeleteUser/:userId", userHandler.DeleteUser)
 }
