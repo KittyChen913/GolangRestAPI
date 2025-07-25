@@ -1,9 +1,8 @@
-package routes
+package handlers
 
 import (
-	"api-service/db"
 	"api-service/models"
-	"api-service/repositories"
+	"api-service/services"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -11,6 +10,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
+type UserHandler struct {
+	userService services.UserService
+}
+
+func NewUserHandler(userService services.UserService) *UserHandler {
+	return &UserHandler{userService: userService}
+}
 
 // createUser 建立新使用者
 // @Summary 建立新使用者
@@ -23,19 +30,17 @@ import (
 // @Success 201 {object} models.User
 // @Failure 400 {object} error
 // @Router /CreateUser [post]
-func createUser(context *gin.Context) {
+func (handler *UserHandler) CreateUser(context *gin.Context) {
 	var user models.User
 	err := context.ShouldBindJSON(&user)
 	if err != nil {
 		context.Error(err)
 		return
 	}
-
 	adminId := context.GetInt("adminId")
 	user.CreateDateTime = time.Now()
 
-	repo := repositories.NewUserRepository(db.Db)
-	err = repo.Insert(&user)
+	err = handler.userService.CreateUser(&user)
 	if err != nil {
 		context.Error(fmt.Errorf("[Admin : %v] create user failed. [error] : %v", adminId, err))
 		return
@@ -53,11 +58,9 @@ func createUser(context *gin.Context) {
 // @Success 200 {array} models.User
 // @Failure 400 {object} error
 // @Router /GetUsers [get]
-func getUsers(context *gin.Context) {
+func (handler *UserHandler) GetUsers(context *gin.Context) {
 	adminId := context.GetInt("adminId")
-
-	repo := repositories.NewUserRepository(db.Db)
-	users, err := repo.Query()
+	users, err := handler.userService.GetUsers()
 	if err != nil {
 		context.Error(fmt.Errorf("[Admin : %v] could not fetch users. [error] : %v", adminId, err))
 		return
@@ -76,7 +79,7 @@ func getUsers(context *gin.Context) {
 // @Success 200 {object} models.User
 // @Failure 400 {object} error
 // @Router /GetUser/{userId} [get]
-func getUser(context *gin.Context) {
+func (handler *UserHandler) GetUser(context *gin.Context) {
 	userId, err := strconv.ParseInt(context.Param("userId"), 10, 32)
 	if err != nil {
 		context.Error(fmt.Errorf("could not parse user id"))
@@ -85,8 +88,7 @@ func getUser(context *gin.Context) {
 
 	adminId := context.GetInt("adminId")
 
-	repo := repositories.NewUserRepository(db.Db)
-	user, err := repo.QueryById(int(userId))
+	user, err := handler.userService.GetUser(int(userId))
 	if err != nil {
 		context.Error(fmt.Errorf("[Admin : %v] could not fetch user. [error] : %v", adminId, err))
 		return
@@ -106,7 +108,7 @@ func getUser(context *gin.Context) {
 // @Success 201 {object} string
 // @Failure 400 {object} error
 // @Router /UpdateUser/{userId} [put]
-func updateUser(context *gin.Context) {
+func (handler *UserHandler) UpdateUser(context *gin.Context) {
 	userId, err := strconv.ParseInt(context.Param("userId"), 10, 32)
 	if err != nil {
 		context.Error(fmt.Errorf("could not parse user id. [error] : %v", err))
@@ -115,8 +117,7 @@ func updateUser(context *gin.Context) {
 
 	adminId := context.GetInt("adminId")
 
-	repo := repositories.NewUserRepository(db.Db)
-	_, err = repo.QueryById(int(userId))
+	_, err = handler.userService.GetUser(int(userId))
 	if err != nil {
 		context.Error(fmt.Errorf("[Admin : %v] could not fetch the user. [error] : %v", adminId, err))
 		return
@@ -130,7 +131,7 @@ func updateUser(context *gin.Context) {
 	}
 	updatedUser.Id = int(userId)
 
-	err = repo.Update(&updatedUser)
+	err = handler.userService.UpdateUser(int(userId), &updatedUser)
 	if err != nil {
 		context.Error(fmt.Errorf("[Admin : %v] could not update user. [error] : %v", adminId, err))
 		return
@@ -149,7 +150,7 @@ func updateUser(context *gin.Context) {
 // @Success 200 {object} string
 // @Failure 400 {object} error
 // @Router /DeleteUser/{userId} [delete]
-func deleteUser(context *gin.Context) {
+func (handler *UserHandler) DeleteUser(context *gin.Context) {
 	userId, err := strconv.ParseInt(context.Param("userId"), 10, 32)
 	if err != nil {
 		context.Error(fmt.Errorf("could not parse user id"))
@@ -158,13 +159,12 @@ func deleteUser(context *gin.Context) {
 
 	adminId := context.GetInt("adminId")
 
-	repo := repositories.NewUserRepository(db.Db)
-	user, err := repo.QueryById(int(userId))
+	_, err = handler.userService.GetUser(int(userId))
 	if err != nil {
 		context.Error(fmt.Errorf("[Admin : %v] could not fetch user. [error] : %v", adminId, err))
 		return
 	}
-	err = repo.Delete(user)
+	err = handler.userService.DeleteUser(int(userId))
 	if err != nil {
 		context.Error(fmt.Errorf("[Admin : %v] delete user failed. [error] : %v", adminId, err))
 		return

@@ -3,8 +3,11 @@ package main
 import (
 	"api-service/db"
 	_ "api-service/docs"
+	"api-service/handlers"
 	"api-service/logger"
+	"api-service/repositories"
 	"api-service/routes"
+	"api-service/services"
 
 	"github.com/gin-gonic/gin"
 
@@ -22,6 +25,10 @@ func main() {
 	// Swagger settings
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	routes.RegisterRoutes(server)
+	userRepo := repositories.NewUserRepository(db.Db)
+	userService := services.NewUserService(userRepo)
+	userHandler := handlers.NewUserHandler(userService)
+
+	routes.RegisterRoutes(server, userHandler)
 	server.Run()
 }
