@@ -18,6 +18,39 @@
     <img src="images/GolangRestAPI%20Architecture%20Diagram.png" alt="架構圖" width="75%">
 </p>
 
+## 依賴注入（Dependency Injection）
+
+這個專案採用依賴注入設計，Service/Repository 皆於 `main.go` 統一建立並注入到 handler 及 middleware，讓程式碼更易於測試、維護與擴充。
+
+```go
+// main.go
+userRepo := repositories.NewUserRepository(db.Db)
+userService := services.NewUserService(userRepo)
+userHandler := handlers.NewUserHandler(userService)
+
+server.POST("/CreateUser", userHandler.CreateUser)
+```
+
+## 組態設定
+
+`docker-compose.yml`定義所有服務的啟動方式、相依性、資料卷。
+
+### 環境變數
+
+*   **`api-service`**:
+    *   `DemoDb`: 連接到 MS SQL 資料庫的連線字串。
+*   **`mssql-db`**:
+    *   `SA_PASSWORD`: `SA` 使用者的密碼。
+
+### 資料庫初始化
+
+當 `mssql-db` 服務首次啟動時，會自動執行 `initDb/init.sql` 指令碼，這裡會執行建立資料表 (`CREATE TABLE`) 的 SQL 命令。
+
+### 日誌收集
+
+日誌收集的設定位於 `filebeat/filebeat.yml`，filebeat 會監控 `log-data` 磁碟區中的日誌檔案，該磁碟區與 `api-service` 共享。
+
+
 ## 環境需求
 
 -   Docker
@@ -50,40 +83,31 @@ docker-compose up --build
     -   **使用者**: `SA`
     -   **密碼**: `StrongPassword!123`
 
-## 組態設定
-
-`docker-compose.yml`定義所有服務的啟動方式、相依性、資料卷。
-
-### 環境變數
-
-*   **`api-service`**:
-    *   `DemoDb`: 連接到 MS SQL 資料庫的連線字串。
-*   **`mssql-db`**:
-    *   `SA_PASSWORD`: `SA` 使用者的密碼。
-
-### 資料庫初始化
-
-當 `mssql-db` 服務首次啟動時，會自動執行 `initDb/init.sql` 指令碼，這裡會執行建立資料表 (`CREATE TABLE`) 的 SQL 命令。
-
-### 日誌收集
-
-日誌收集的設定位於 `filebeat/filebeat.yml`，filebeat 會監控 `log-data` 磁碟區中的日誌檔案，該磁碟區與 `api-service` 共享。
 
 ## 目錄結構
 
 ```
-├── api-service/          # Golang API
-│   ├── customerrors      # 自定義錯誤
-│   ├── db/               # 資料庫連線與操作
-│   ├── docs/             # Swagger 文件
-│   ├── logger/           # 日誌工具
-│   ├── middlewares/      # Gin 中介層
-│   ├── models/           # 資料模型
-│   ├── routes/           # API 路由
-│   ├── utils/            # 工具
-│   ├── Dockerfile        # Docker 構建檔案
-│   └── main.go
-├── filebeat/filebeat.yml # Filebeat 設定
-├── initDb/init.sql       # SQL Server 初始化腳本
-├── docker-compose.yml    # Docker Compose 配置
+├── api-service/                # Golang API 主程式
+│   ├── customerrors/           # 自定義錯誤型別
+│   ├── db/                     # 資料庫連線與操作
+│   ├── docs/                   # Swagger 自動產生的 API 文檔
+│   ├── handlers/               # HTTP handler
+│   ├── logger/                 # 日誌工具
+│   ├── middlewares/            # Gin 中介層（權限驗證、日誌、錯誤處理）
+│   ├── models/                 # 資料模型
+│   ├── repositories/           # 資料存取層
+│   ├── routes/                 # API 路由註冊
+│   ├── services/               # 商業邏輯層
+│   ├── utils/                  # 工具函式
+│   ├── Dockerfile              # Docker 構建檔案
+│   ├── go.mod                  # Go module 設定
+│   ├── go.sum                  # Go module 依賴雜湊
+│   └── main.go                 # 進入點
+├── filebeat/
+│   └── filebeat.yml            # Filebeat 設定檔
+├── images/                     # 說明文件用的圖檔
+├── initDb/
+│   └── init.sql                # SQL Server 初始化腳本
+├── docker-compose.yml          # Docker Compose 配置
+└── README.md                   # 專案說明文件
 ```
