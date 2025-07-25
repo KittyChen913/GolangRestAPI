@@ -33,6 +33,6 @@ func main() {
 	userService := services.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userService)
 
-	routes.RegisterRoutes(server, adminHandler, userHandler)
+	routes.RegisterRoutes(server, adminHandler, userHandler, adminService)
 	server.Run()
 }

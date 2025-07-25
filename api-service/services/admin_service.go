@@ -7,6 +7,7 @@ import (
 
 type AdminService interface {
 	SignUpAdmin(admin *models.Admin) error
+	QueryAdmin(id int) (*models.Admin, error)
 }
 
 type adminService struct {
@@ -23,4 +24,8 @@ func (a *adminService) SignUpAdmin(admin *models.Admin) error {
 		return err
 	}
 	return nil
+}
+
+func (a *adminService) QueryAdmin(id int) (*models.Admin, error) {
+	return a.repo.QueryById(id)
 }

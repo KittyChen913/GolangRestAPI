@@ -3,13 +3,15 @@ package routes
 import (
 	"api-service/handlers"
 	"api-service/middlewares"
+	"api-service/services"
 
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterRoutes(server *gin.Engine,
 	adminHandler *handlers.AdminHandler,
-	userHandler *handlers.UserHandler) {
+	userHandler *handlers.UserHandler,
+	adminService services.AdminService) {
 
 	server.Use(middlewares.ZapLoggerMiddleware)
 	server.Use(middlewares.ErrorHandler)
@@ -17,7 +19,7 @@ func RegisterRoutes(server *gin.Engine,
 	server.POST("/SignUpAdmin", adminHandler.SignUpAdmin)
 
 	amindAuthenticated := server.Group("/")
-	amindAuthenticated.Use(middlewares.Authenticate)
+	amindAuthenticated.Use(middlewares.Authenticate(adminService))
 	amindAuthenticated.POST("/CreateUser", userHandler.CreateUser)
 	amindAuthenticated.GET("/GetUsers", userHandler.GetUsers)
 	amindAuthenticated.GET("/GetUser/:userId", userHandler.GetUser)

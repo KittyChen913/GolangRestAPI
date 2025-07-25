@@ -37,15 +37,15 @@ func (handler *UserHandler) CreateUser(context *gin.Context) {
 		context.Error(err)
 		return
 	}
-	adminId := context.GetInt("adminId")
+	adminName := context.GetString("adminName")
 	user.CreateDateTime = time.Now()
 
 	err = handler.userService.CreateUser(&user)
 	if err != nil {
-		context.Error(fmt.Errorf("[Admin : %v] create user failed. [error] : %v", adminId, err))
+		context.Error(fmt.Errorf("[Admin : %v] create user failed. [error] : %v", adminName, err))
 		return
 	}
-	context.JSON(http.StatusCreated, gin.H{"message": fmt.Sprintf("[Admin : %v] user created", adminId), "user": user})
+	context.JSON(http.StatusCreated, gin.H{"message": fmt.Sprintf("[Admin : %v] user created", adminName), "user": user})
 }
 
 // getUsers 取得所有使用者
@@ -59,10 +59,10 @@ func (handler *UserHandler) CreateUser(context *gin.Context) {
 // @Failure 400 {object} error
 // @Router /GetUsers [get]
 func (handler *UserHandler) GetUsers(context *gin.Context) {
-	adminId := context.GetInt("adminId")
+	adminName := context.GetString("adminName")
 	users, err := handler.userService.GetUsers()
 	if err != nil {
-		context.Error(fmt.Errorf("[Admin : %v] could not fetch users. [error] : %v", adminId, err))
+		context.Error(fmt.Errorf("[Admin : %v] could not fetch users. [error] : %v", adminName, err))
 		return
 	}
 	context.JSON(http.StatusOK, users)
@@ -86,11 +86,11 @@ func (handler *UserHandler) GetUser(context *gin.Context) {
 		return
 	}
 
-	adminId := context.GetInt("adminId")
+	adminName := context.GetString("adminName")
 
 	user, err := handler.userService.GetUser(int(userId))
 	if err != nil {
-		context.Error(fmt.Errorf("[Admin : %v] could not fetch user. [error] : %v", adminId, err))
+		context.Error(fmt.Errorf("[Admin : %v] could not fetch user. [error] : %v", adminName, err))
 		return
 	}
 	context.JSON(http.StatusOK, user)
@@ -115,11 +115,11 @@ func (handler *UserHandler) UpdateUser(context *gin.Context) {
 		return
 	}
 
-	adminId := context.GetInt("adminId")
+	adminName := context.GetString("adminName")
 
 	_, err = handler.userService.GetUser(int(userId))
 	if err != nil {
-		context.Error(fmt.Errorf("[Admin : %v] could not fetch the user. [error] : %v", adminId, err))
+		context.Error(fmt.Errorf("[Admin : %v] could not fetch the user. [error] : %v", adminName, err))
 		return
 	}
 
@@ -133,10 +133,10 @@ func (handler *UserHandler) UpdateUser(context *gin.Context) {
 
 	err = handler.userService.UpdateUser(int(userId), &updatedUser)
 	if err != nil {
-		context.Error(fmt.Errorf("[Admin : %v] could not update user. [error] : %v", adminId, err))
+		context.Error(fmt.Errorf("[Admin : %v] could not update user. [error] : %v", adminName, err))
 		return
 	}
-	context.JSON(http.StatusCreated, gin.H{"message": fmt.Sprintf("[Admin : %v] User updated.", adminId)})
+	context.JSON(http.StatusCreated, gin.H{"message": fmt.Sprintf("[Admin : %v] User updated.", adminName)})
 }
 
 // deleteUser 刪除使用者
@@ -157,17 +157,17 @@ func (handler *UserHandler) DeleteUser(context *gin.Context) {
 		return
 	}
 
-	adminId := context.GetInt("adminId")
+	adminName := context.GetString("adminName")
 
 	_, err = handler.userService.GetUser(int(userId))
 	if err != nil {
-		context.Error(fmt.Errorf("[Admin : %v] could not fetch user. [error] : %v", adminId, err))
+		context.Error(fmt.Errorf("[Admin : %v] could not fetch user. [error] : %v", adminName, err))
 		return
 	}
 	err = handler.userService.DeleteUser(int(userId))
 	if err != nil {
-		context.Error(fmt.Errorf("[Admin : %v] delete user failed. [error] : %v", adminId, err))
+		context.Error(fmt.Errorf("[Admin : %v] delete user failed. [error] : %v", adminName, err))
 		return
 	}
-	context.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("[Admin : %v] User deleted.", adminId)})
+	context.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("[Admin : %v] User deleted.", adminName)})
 }

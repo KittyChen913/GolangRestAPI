@@ -8,6 +8,7 @@ import (
 
 type AdminRepository interface {
 	Insert(admin *models.Admin) error
+	QueryById(id int) (*models.Admin, error)
 }
 
 type adminRepository struct {
@@ -45,4 +46,15 @@ func (repo *adminRepository) Insert(admin *models.Admin) error {
 	}
 	admin.AdminId = adminId
 	return nil
+}
+
+func (repo *adminRepository) QueryById(id int) (*models.Admin, error) {
+	query := `SELECT AdminId, Name, Password, Email FROM Admins WHERE AdminId = @adminId`
+	row := repo.Db.QueryRow(query, sql.Named("adminId", id))
+	var admin models.Admin
+	err := row.Scan(&admin.AdminId, &admin.Name, &admin.Password, &admin.Email)
+	if err != nil {
+		return nil, err
+	}
+	return &admin, nil
 }
